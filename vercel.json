@@ -1,27 +1,31 @@
 {
   "version": 2,
-  "rewrites": [
-    { "source": "/assets/audio/:path*", "destination": "/assets/audio/:path*" }
-  ],
-  "headers": [
-    {
-      "source": "/assets/audio/(.*)",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "audio/mpeg"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000"
-        }
-      ]
-    }
-  ],
+  "public": true,
   "builds": [
     { "src": "*.html", "use": "@vercel/static" },
     { "src": "*.css", "use": "@vercel/static" },
     { "src": "*.js", "use": "@vercel/static" },
-    { "src": "assets/**/*", "use": "@vercel/static" }
+    { 
+      "src": "assets/**/*", 
+      "use": "@vercel/static",
+      "config": {
+        "includeFiles": ["assets/**/*"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/assets/audio/(.*)",
+      "dest": "/assets/audio/$1",
+      "headers": {
+        "Content-Type": "audio/mpeg",
+        "Cache-Control": "public, max-age=31536000",
+        "Access-Control-Allow-Origin": "*"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
   ]
 } 
