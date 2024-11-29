@@ -219,9 +219,25 @@ function handleAudio() {
     });
 }
 
-// 初始化
+// 在初始化函数中添加生成卡片的代码
+function generateCards() {
+    const container = document.querySelector('.card-container');
+    container.innerHTML = audioConfig.podcasts.map(podcast => `
+        <div class="card" data-audio="${podcast.audio}">
+            <div class="card-content">
+                <img src="${podcast.image}" alt="${podcast.title}">
+                <div class="title-overlay">
+                    <h2>${podcast.title}</h2>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// 修改初始化函数
 document.addEventListener('DOMContentLoaded', () => {
+    generateCards();
     createStars();
     handleCardEffect();
-    handleAudio(); // 替换原来的handleCardClick
+    handleAudio();
 }); 

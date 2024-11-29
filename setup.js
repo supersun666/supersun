@@ -16,11 +16,11 @@ directories.forEach(dir => {
     }
 });
 
-// 创建示例图片（1x1像素的base64编码）
+// 创建示例图片
 const sampleImageBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 const sampleImageBuffer = Buffer.from(sampleImageBase64, 'base64');
 
-// 创建示例音频（空文件）
+// 创建示例图片文件
 const imageFiles = ['logo.png', 'blog1.jpg', 'blog2.jpg', 'blog3.jpg', 'blog4.jpg'];
 const audioFiles = ['music1.mp3', 'music2.mp3', 'music3.mp3', 'music4.mp3'];
 
@@ -33,7 +33,7 @@ imageFiles.forEach(file => {
     }
 });
 
-// 创建示例音频文件
+// 创建示例音频文件在 assets/audio 目录下
 audioFiles.forEach(file => {
     const filePath = path.join('assets/audio', file);
     if (!fs.existsSync(filePath)) {
