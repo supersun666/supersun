@@ -1,0 +1,394 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    color: white;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 移除原来的背景星星 */
+body::before {
+    display: none; /* 移除固定的星星背景 */
+}
+
+/* 调整层级关系 */
+.stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1; /* 确保星星在最底层 */
+}
+
+/* 修改卡片容器样式，确保位置不变 */
+.card-container {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(200px, 250px));
+    grid-template-rows: repeat(2, auto);
+    gap: clamp(1rem, 3vw, 2rem);
+    justify-content: center;
+    align-content: center;
+    padding: clamp(1rem, 3vw, 2rem);
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+/* 修改卡片基础样式 */
+.card {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    background: rgba(20, 20, 20, 0.8);
+    border-radius: 10px;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: all 0.3s ease;
+    z-index: 2;
+    overflow: visible; /* 改为visible以显示边框效果 */
+}
+
+.card:hover {
+    box-shadow: 0 0 30px rgba(99, 82, 255, 0.15);
+}
+
+/* 调整卡片内容布局 */
+.card-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden; /* 内容仍然保持隐藏溢出 */
+}
+
+.card:hover {
+    transform: none;
+}
+
+/* 修改图片样式使其充满容器 */
+.card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+}
+
+/* 调整标题蒙层样式，减小高度 */
+.card .title-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.8rem 1rem; /* 减小内边距 */
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.4) 30%,
+        rgba(0, 0, 0, 0.7) 100%
+    );
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    height: auto; /* 让高度自适应内容 */
+}
+
+/* 调整标题文字样式 */
+.card h2 {
+    margin: 0;
+    font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    line-height: 1.2; /* 减小行高 */
+}
+
+/* 媒体查询适配不同屏幕 */
+@media (max-width: 768px) {
+    .card-container {
+        grid-template-columns: repeat(2, minmax(150px, 200px)); /* 更小的屏幕更小的卡片 */
+        gap: 1rem;
+    }
+}
+
+@media (min-width: 1440px) {
+    .card-container {
+        grid-template-columns: repeat(2, 250px); /* 大屏幕固定大小 */
+    }
+}
+
+/* 修改播放器样式 */
+.player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(20px) saturate(180%);
+    padding: 1.5rem;
+    z-index: 3;
+}
+
+.player.active {
+    transform: translateY(0);
+}
+
+/* 优化毛玻璃效果的背景 */
+.player::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(20, 20, 20, 0.3);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    z-index: -1;
+}
+
+/* 修改播放器布局 */
+.player-container {
+    display: flex;
+    align-items: center;
+    max-width: 800px;
+    width: 90%;
+    margin: 0 auto;
+    gap: 2rem;
+}
+
+/* 播放控制按钮样式 */
+.player-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.play-btn {
+    width: 45px;
+    height: 45px;
+    border: 2px solid rgba(255, 255, 255, 0.8) !important;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.play-btn:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* 进度条容器 */
+.progress-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column; /* 改为纵向布局 */
+    gap: 0.5rem;
+}
+
+/* 时间显示 */
+.time {
+    font-size: 0.9rem;
+    color: #888;
+    min-width: auto; /* 移除最小宽度限制 */
+}
+
+/* 进度条样式 */
+.progress-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+    overflow: visible; /* 允许滑块显示在外部 */
+}
+
+/* 修改进度条渐变色 */
+.progress {
+    width: 0%;
+    height: 100%;
+    background: #6352FF; /* 改为纯紫色 */
+    border-radius: 2px;
+    position: relative;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 10px rgba(99, 82, 255, 0.3);
+}
+
+/* 进度条hover效果 */
+.progress-bar:hover {
+    height: 6px;
+    transition: height 0.2s ease;
+}
+
+.progress-bar:hover .progress::after {
+    transform: translate(50%, -50%) scale(1);
+}
+
+/* 进度条滑块 */
+.progress::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    transform: translate(50%, -50%) scale(0);
+    transition: transform 0.2s ease;
+}
+
+/* 添加随机闪烁的星星 */
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.1;
+}
+
+@keyframes randomTwinkle {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.7; }
+}
+
+/* Logo样式调整 */
+.logo {
+    text-align: center;
+    color: white;
+    font-size: clamp(28px, 5vw, 32px);
+    margin: 0;
+    z-index: 2;
+}
+
+.rotating-logo {
+    width: 40px;
+    height: 40px;
+    animation: rotate 5s linear infinite;
+    order: -1;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 修改播放器显示样式 */
+.player.active {
+    display: block !important;
+}
+
+/* 修改header样式 */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 3.5rem 0 4.5rem;
+    position: absolute;
+    width: 100%;
+    top: 1.5rem;
+    z-index: 2;
+}
+
+/* 调整时间显示容器样式 */
+.time-container {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem; /* 减小时间之间的间距 */
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    margin-left: 1rem; /* 减小左边距 */
+}
+
+/* 添加当前播放标题样式 */
+.now-playing {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.3rem;
+}
+
+/* 进度条和时间容器 */
+.progress-time-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+/* 时间显示容器 */
+.time-container {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    min-width: 85px; /* 固定最小宽度避免跳动 */
+}
+
+/* 修改发光边框效果 */
+.card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    padding: 1px;
+    background: linear-gradient(
+        90deg,
+        #6352FF,
+        rgba(0, 0, 0, 0.8),
+        #6352FF
+    );
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background-size: 200% 100%;
+    animation: borderGradient 3s linear infinite;
+    pointer-events: none;
+}
+
+/* 修改hover效果 */
+.card:hover::before {
+    opacity: 1;
+}
+
+/* 优化边框动画 */
+@keyframes borderGradient {
+    0% {
+        background-position: 0% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+ 

@@ -1,0 +1,42 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/assets/audio/music1.mp3",
+      "dest": "/assets/audio/music1.mp3"
+    },
+    {
+      "src": "/assets/audio/music2.mp3",
+      "dest": "/assets/audio/music2.mp3"
+    },
+    {
+      "src": "/assets/audio/music3.mp3",
+      "dest": "/assets/audio/music3.mp3"
+    },
+    {
+      "src": "/assets/audio/music4.mp3",
+      "dest": "/assets/audio/music4.mp3"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/audio/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "audio/mpeg"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000"
+        }
+      ]
+    }
+  ],
+  "builds": [
+    { "src": "*.html", "use": "@vercel/static" },
+    { "src": "*.css", "use": "@vercel/static" },
+    { "src": "*.js", "use": "@vercel/static" },
+    { "src": "assets/**/*", "use": "@vercel/static" }
+  ]
+} 
