@@ -112,11 +112,21 @@ function handleAudio() {
         }
     });
 
+    // 获取随机音频URL
+    function getRandomAudio() {
+        const audioList = audioConfig.audioUrls;
+        if (!audioList || audioList.length === 0) {
+            console.error('No audio URLs available');
+            return null;
+        }
+        const randomIndex = Math.floor(Math.random() * audioList.length);
+        return audioList[randomIndex];
+    }
+
     // 修改卡片点击事件
     cards.forEach(card => {
         card.addEventListener('click', (e) => {
             e.stopPropagation();
-            const audioSrc = card.dataset.audio;
             const title = card.querySelector('h2').textContent;
             
             // 如果点击的是当前正在播放的卡片
@@ -138,14 +148,28 @@ function handleAudio() {
                 audio.currentTime = 0;
             }
             
-            // 播放新的音频
-            nowPlaying.textContent = `正在播放：${title}`;
-            audio.src = audioSrc;
-            currentCard = card;
-            audio.play();
-            isPlaying = true;
-            player.classList.add('active');
-            updatePlayButton();
+            // 播放随机音频
+            const randomAudioUrl = getRandomAudio();
+            if (randomAudioUrl) {
+                nowPlaying.textContent = `正在播放：${title}`;
+                audio.src = randomAudioUrl;
+                currentCard = card;
+                
+                // 添加加载检查
+                audio.addEventListener('canplay', function onCanPlay() {
+                    audio.play()
+                        .then(() => {
+                            isPlaying = true;
+                            player.classList.add('active');
+                            updatePlayButton();
+                        })
+                        .catch(err => {
+                            console.error('Playback failed:', err);
+                            resetPlayer();
+                        });
+                    audio.removeEventListener('canplay', onCanPlay);
+                });
+            }
         });
     });
 
@@ -217,13 +241,19 @@ function handleAudio() {
     player.addEventListener('click', (e) => {
         e.stopPropagation();
     });
+
+    // 在handleAudio函数中添加错误处理
+    audio.addEventListener('error', (e) => {
+        console.error('Audio error:', e);
+        resetPlayer();
+    });
 }
 
-// 在初始化函数中添加生成卡片的代码
+// 修改生成卡片的代码
 function generateCards() {
     const container = document.querySelector('.card-container');
     container.innerHTML = audioConfig.podcasts.map(podcast => `
-        <div class="card" data-audio="${podcast.audio}">
+        <div class="card">
             <div class="card-content">
                 <img src="${podcast.image}" alt="${podcast.title}">
                 <div class="title-overlay">
